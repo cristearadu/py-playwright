@@ -75,9 +75,6 @@ def pytest_cmdline_main(config):
 # -------------------------
 # Main Playwright fixtures
 # -------------------------
-@pytest.fixture(scope="session")
-def base_url():
-    return Settings.base_url
 
 
 @pytest.fixture(scope="session")
@@ -107,8 +104,7 @@ def context(browser):
 
 
 @pytest.fixture()
-def page(context, base_url):
+def page(context):
     page = context.new_page()
-    page.goto(base_url)
     yield page
     page.close()
