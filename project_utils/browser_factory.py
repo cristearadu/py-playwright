@@ -8,14 +8,13 @@ class BrowserFactory:
         match browser:
             case BrowserName.CHROME.value:
                 return playwright.chromium.launch(
-                    channel="chrome",
                     headless=headless,
                     args=["--start-maximized"]
                 )
             case BrowserName.FIREFOX.value:
                 return playwright.firefox.launch(headless=headless)
             case BrowserName.EDGE.value:
-                return playwright.edge.launch(
+                return playwright.chromium.launch(
                     channel="msedge",
                     headless=headless,
                     args=["--start-maximized"]
