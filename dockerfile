@@ -16,9 +16,8 @@ COPY . .
 RUN python -m playwright install --with-deps
 
 # -------- Runtime-configurable defaults for pytest --------
-# Leave PYTEST_TESTS empty to rely on pytest.ini/pyproject [tool.pytest.ini_options].
-# You can still override it with e.g. PYTEST_TESTS="tests tests_extra"
-ENV PYTEST_TESTS="" \
+# CHANGE: Updated default test path from 'tests_saucedemo' to 'tests'
+ENV PYTEST_TESTS="tests" \
     PYTEST_WORKERS="auto" \
     RUN_BROWSER="chrome" \
     PYTEST_HEADLESS="1" \
@@ -36,12 +35,7 @@ RUN printf '%s\n' '#!/usr/bin/env bash' \
     'if [[ -n "${PYTEST_MARKERS:-}" ]]; then' \
     '  MARKER_ARGS=(-m "${PYTEST_MARKERS}")' \
     'fi' \
-    'TARGETS=()' \
-    'if [[ -n "${PYTEST_TESTS:-}" ]]; then' \
-    '  # allow multiple, space-separated targets' \
-    '  read -r -a TARGETS <<< "${PYTEST_TESTS}"' \
-    'fi' \
-    'exec pytest "${TARGETS[@]}" -n "${PYTEST_WORKERS:-auto}" --run-browser="${RUN_BROWSER:-chrome}" ${HEADLESS_FLAG} "${MARKER_ARGS[@]}" ${PYTEST_EXTRA_ARGS:-}' \
+    'exec pytest "${PYTEST_TESTS:-tests}" -n "${PYTEST_WORKERS:-auto}" --run-browser="${RUN_BROWSER:-chrome}" ${HEADLESS_FLAG} "${MARKER_ARGS[@]}" ${PYTEST_EXTRA_ARGS:-}' \
     > /usr/local/bin/pytest-entrypoint && chmod +x /usr/local/bin/pytest-entrypoint
 
 ENTRYPOINT ["/usr/local/bin/pytest-entrypoint"]
