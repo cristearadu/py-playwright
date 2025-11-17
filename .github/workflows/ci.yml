@@ -12,11 +12,11 @@ on:
   workflow_dispatch:
     inputs:
       browser:
-        description: "Browser to run (chrome | firefox | edge | safari)"
+        description: "Browser to run (chrome | firefox | safari)"
         type: choice
         required: true
         default: "chrome"
-        options: [chrome, firefox, edge, safari]
+        options: [chrome, firefox, safari]
       markers:
         description: 'Pytest -m expression'
         type: choice
@@ -46,7 +46,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        browser: [chrome, firefox, edge, safari]
+        browser: [chrome, firefox, safari]
 
     env:
       BASE_URL: https://www.saucedemo.com/

@@ -1,3 +1,4 @@
+import os
 import pytest
 from constants import BrowserName
 
@@ -20,7 +21,8 @@ class BrowserFactory:
                     args=["--start-maximized"]
                 )
             case BrowserName.SAFARI.value:
-                pytest.logger.warning("[BrowserFactory] Safari ignores headless")
-                return playwright.webkit.launch(headless=False)
+                if not os.environ.get("DISPLAY"):
+                    headless = True
+                return playwright.webkit.launch(headless=headless)
             case _:
                 raise ValueError(f"Unknown browser '{browser}'")

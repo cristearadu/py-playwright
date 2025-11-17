@@ -15,8 +15,6 @@ COPY . .
 
 RUN python -m playwright install --with-deps
 
-# -------- Runtime-configurable defaults for pytest --------
-# CHANGE: Updated default test path from 'tests_saucedemo' to 'tests'
 ENV PYTEST_TESTS="tests" \
     PYTEST_WORKERS="auto" \
     RUN_BROWSER="chrome" \
