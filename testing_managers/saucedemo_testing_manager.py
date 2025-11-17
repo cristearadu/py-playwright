@@ -1,38 +1,38 @@
 from constants import SauceDemoUsers
-from .base_testing_manager import UserCredentials
+from .base_testing_manager import BaseTestingManager
 
 
 class SauceDemoTestingManager:
 
     @classmethod
-    def get(cls, user: SauceDemoUsers) -> UserCredentials:
-        return UserCredentials(
+    def get(cls, user: SauceDemoUsers) -> BaseTestingManager:
+        return BaseTestingManager(
             username=user.value,
             password=SauceDemoUsers.PASSWORD.value
         )
 
     @classmethod
-    def standard(cls) -> UserCredentials:
+    def standard(cls) -> BaseTestingManager:
         return cls.get(SauceDemoUsers.STANDARD)
 
     @classmethod
-    def locked(cls) -> UserCredentials:
+    def locked(cls) -> BaseTestingManager:
         return cls.get(SauceDemoUsers.LOCKED)
 
     @classmethod
-    def problem(cls) -> UserCredentials:
+    def problem(cls) -> BaseTestingManager:
         return cls.get(SauceDemoUsers.LOCKED)
 
     @classmethod
-    def performance(cls) -> UserCredentials:
+    def performance(cls) -> BaseTestingManager:
         return cls.get(SauceDemoUsers.PERFORMANCE)
 
     @classmethod
-    def error(cls) -> UserCredentials:
+    def error(cls) -> BaseTestingManager:
         return cls.get(SauceDemoUsers.ERROR)
 
     @classmethod
-    def visual(cls) -> UserCredentials:
+    def visual(cls) -> BaseTestingManager:
         return cls.get(SauceDemoUsers.VISUAL)
 
 

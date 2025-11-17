@@ -27,7 +27,7 @@ class BasePage:
     # --------------------------
 
     def get_text(self, locator: str) -> str:
-        return self.page.inner_text(locator)
+        return self.page.inner_text(locator).strip()
 
     def get_attribute(self, locator: str, attribute: str) -> str:
         return self.page.locator(locator).get_attribute(attribute)

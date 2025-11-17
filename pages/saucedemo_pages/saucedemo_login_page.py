@@ -24,7 +24,7 @@ class SauceDemoLoginPage(SauceDemoBasePage):
         for locator in controls:
             if not self.check_element_is_present_and_enabled(locator):
                 return False
-        return self.is_visible(self.HEADER) and self.contains_text(self.HEADER, HeaderTexts.MAIN_TEXT.value)
+        return self.is_visible(self.HEADER) and self.contains_text(self.HEADER, HeaderTexts.MainText.value)
 
     def login(self, username: str, password: str):
         self.type(self.USERNAME, username)
@@ -32,7 +32,7 @@ class SauceDemoLoginPage(SauceDemoBasePage):
         self.click(self.LOGIN_BTN)
 
     def login_with_user(self, user):
-        pytest.logger.info(f"Logging in with {user}")
+        pytest.logger.info(f"Trying to login in with {user}")
         self.login(user.username, user.password)
 
     def get_error(self) -> str:

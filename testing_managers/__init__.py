@@ -1,1 +1,2 @@
 from .saucedemo_testing_manager import SauceDemoTestingManager
+from .base_testing_manager import BaseTestingManager

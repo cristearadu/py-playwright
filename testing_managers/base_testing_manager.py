@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 
 @dataclass(frozen=True)
-class UserCredentials:
+class BaseTestingManager:
     username: str
     password: str
 
