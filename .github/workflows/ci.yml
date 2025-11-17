@@ -178,7 +178,7 @@ jobs:
           pattern: allure-results-*
 
       - name: Generate Allure Report
-        uses: simple-elf/allure-report-action@v1
+        uses: simple-elf/allure-report-action@v1.9
         with:
           allure_results: allure-results
           allure_report: allure-report
