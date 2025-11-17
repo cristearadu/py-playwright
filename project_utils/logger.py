@@ -7,6 +7,18 @@ ROOT_WORKING_DIRECTORY = Path(__file__).resolve().parents[1]
 LOGS_FOLDER = "logs"
 
 
+def _current_worker_id() -> str:
+    # Provided by pytest-xdist; absent in controller process
+    return os.environ.get("PYTEST_XDIST_WORKER", "controller")
+
+
+class _WorkerFilter(logging.Filter):
+    """Injects the pytest-xdist worker id into every LogRecord as 'worker'."""
+    def filter(self, record: logging.LogRecord) -> bool:
+        record.worker = _current_worker_id()
+        return True
+
+
 def init_logger():
     """
     Initialize pytest-compatible logger.
@@ -26,17 +38,22 @@ def init_logger():
     root_logger = logging.getLogger()
     root_logger.setLevel(logging.DEBUG)
 
+    # !!! always ensure worker id is attached to records
+    root_logger.addFilter(_WorkerFilter())
+
     if not root_logger.handlers:
         file_handler = logging.FileHandler(log_file, encoding="utf-8")
-        file_formatter = logging.Formatter("%(asctime)s [%(levelname)s] %(message)s")
+        file_formatter = logging.Formatter("%(asctime)s [%(levelname)s] [%(worker)s] %(message)s")
         file_handler.setFormatter(file_formatter)
         file_handler.setLevel(logging.DEBUG)
+        file_handler.addFilter(_WorkerFilter())
         root_logger.addHandler(file_handler)
 
         console_handler = logging.StreamHandler()
-        console_formatter = logging.Formatter("%(asctime)s [%(levelname)s] %(message)s")
+        console_formatter = logging.Formatter("%(asctime)s [%(levelname)s] [%(worker)s] %(message)s")
         console_handler.setFormatter(console_formatter)
         console_handler.setLevel(logging.DEBUG)
+        console_handler.addFilter(_WorkerFilter())
         root_logger.addHandler(console_handler)
 
     logger = logging.getLogger("pytest-logger")

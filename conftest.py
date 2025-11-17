@@ -8,12 +8,13 @@ from constants import BrowserName, CliConfigCommands
 VALID_BROWSERS = {browser.value for browser in BrowserName}
 logger = init_logger()
 pytest.logger = logger
+pytest.logger.debug(f"Worker started: {os.environ.get('PYTEST_XDIST_WORKER', 'controller')}")
 
 
 def pytest_runtest_call(item):
     doc = item.function.__doc__
     if doc:
-        pytest.logger.info(f"RUnning Test: ${item.name}\n${doc.strip()}")
+        pytest.logger.info(f"Running Test: ${item.name}\n${doc.strip()}")
 
 
 # --------------------------------
