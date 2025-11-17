@@ -1,0 +1,133 @@
+name: CI (Docker)
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  # 3x per day — times are in UTC (adjust if you want different hours)
+  schedule:
+    - cron: "0 6,14,22 * * *"
+  # Manual trigger with custom inputs
+  workflow_dispatch:
+    inputs:
+      browser:
+        description: "Browser to run (chrome | firefox | safari)"
+        type: choice
+        required: true
+        default: "chrome"
+        options: [chrome, firefox, safari]
+      markers:
+        description: 'Pytest -m expression (e.g. "smoke or regression")'
+        type: string
+        required: false
+        default: ""
+      headless:
+        description: "Run headless"
+        type: boolean
+        required: true
+        default: true
+      tests_path:
+        description: "Tests path/pattern (default: tests_saucedemo)"
+        type: string
+        required: false
+        default: "tests_saucedemo"
+      workers:
+        description: "xdist workers (auto or number)"
+        type: string
+        required: false
+        default: "auto"
+
+jobs:
+  # Regular CI: build image and run in Docker for each browser
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # Keep 'safari' here; in Linux container this maps to Playwright WebKit in your BrowserFactory.
+        browser: [chrome, firefox, safari]
+
+    env:
+      BASE_URL: https://www.saucedemo.com/
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build test image (cached)
+        uses: docker/build-push-action@v6
+        with:
+            context: .
+            tags: py-playwright:${{ github.sha }}
+            load: true
+            cache-from: type=gha
+            cache-to: type=gha,mode=max
+
+      - name: Run tests in Docker (${{ matrix.browser }})
+        run: |
+          docker run --rm \
+            -e BASE_URL="${BASE_URL}" \
+            -e RUN_BROWSER="${{ matrix.browser }}" \
+            -e PYTEST_HEADLESS="1" \
+            -e PYTEST_TESTS="tests_saucedemo" \
+            py-playwright:${{ github.sha }}
+
+      - name: Upload logs (if any)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs-${{ matrix.browser }}
+          path: |
+            ./pytest.log
+            logs/
+          if-no-files-found: ignore
+
+  # Manual job: lets you choose browser/markers/headless/workers/tests_path at dispatch time
+  tests-manual:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+
+    env:
+      BASE_URL: https://www.saucedemo.com/
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build test image (cached)
+        uses: docker/build-push-action@v6
+        with:
+            context: .
+            tags: py-playwright:${{ github.sha }}
+            load: true
+            cache-from: type=gha
+            cache-to: type=gha,mode=max
+
+      - name: Run tests in Docker (manual)
+        shell: bash
+        run: |
+          docker run --rm \
+            -e BASE_URL="${BASE_URL}" \
+            -e RUN_BROWSER="${{ github.event.inputs.browser }}" \
+            -e PYTEST_MARKERS="${{ github.event.inputs.markers }}" \
+            -e PYTEST_HEADLESS="${{ github.event.inputs.headless }}" \
+            -e PYTEST_TESTS="${{ github.event.inputs.tests_path }}" \
+            -e PYTEST_WORKERS="${{ github.event.inputs.workers }}" \
+            py-playwright:${{ github.sha }}
+
+      - name: Upload logs (if any)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs-manual
+          path: |
+            ./pytest.log
+            logs/
+          if-no-files-found: ignore

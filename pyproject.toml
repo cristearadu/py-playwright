@@ -1,5 +1,5 @@
 [project]
-name = "Python - Playwright Project"
+name = "python-playwright-project"
 description = "A comprehensive test framework using Playwright and Pytest."
 version = "0.1.0"
 requires-python = ">=3.10"
