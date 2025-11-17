@@ -1,0 +1,59 @@
+[project]
+name = "Python - Playwright Project"
+description = "A comprehensive test framework using Playwright and Pytest."
+version = "0.1.0"
+requires-python = ">=3.10"
+
+dependencies = [
+    "certifi==2025.11.12",
+    "charset-normalizer==3.4.4",
+    "exceptiongroup==1.3.0",
+    "execnet==2.1.2",
+    "Faker==38.0.0",
+    "greenlet==3.2.4",
+    "idna==3.11",
+    "iniconfig==2.3.0",
+    "packaging==25.0",
+    "playwright==1.56.0",
+    "pluggy==1.6.0",
+    "pyee==13.0.0",
+    "Pygments==2.19.2",
+    "pytest==8.4.2",
+    "pytest-base-url==2.1.0",
+    "pytest-dependency==0.6.0",
+    "pytest-playwright==0.7.1",
+    "pytest-xdist==3.8.0",
+    "python-dotenv==1.2.1",
+    "python-slugify==8.0.4",
+    "pytest-order==1.3.0",
+    "requests==2.32.5",
+    "text-unidecode==1.3",
+    "tomli==2.3.0",
+    "typing_extensions==4.15.0",
+    "tzdata==2025.2",
+    "urllib3==2.5.0",
+]
+
+
+[tool.setuptools.packages.find]
+where = ["."]
+
+[tool.pytest.ini_options]
+pythonpath = "."
+
+testpaths = [
+    "tests",
+]
+
+markers = [
+    "smoke: Mark test as a quick smoke test.",
+    "regression: Mark test as regression test (all tests).",
+    "login: Mark the test as login functionality.",
+    "color_scheme: Mark the test as color scheme validation."
+]
+
+
+log_cli = true
+log_cli_level = "DEBUG"
+log_file_level = "DEBUG"
+addopts = "-sq --strict-markers -v -rfp --capture=tee-sys --show-capture=all --import-mode=importlib"

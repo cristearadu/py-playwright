@@ -1,5 +1,0 @@
-pytest
-pytest-playwright
-pytest-xdist
-python-dotenv
-faker

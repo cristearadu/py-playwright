@@ -1,5 +1,6 @@
 import pytest
 
+from playwright.sync_api import expect
 from pages.saucedemo_pages.saucedemo_base_page import SauceDemoBasePage
 from constants.saucedemo_constants import HeaderTexts
 
@@ -11,6 +12,8 @@ class SauceDemoLoginPage(SauceDemoBasePage):
     LOGIN_BTN = "#login-button"
     ERROR_MSG = "[data-test='error']"
     HEADER = ".login_logo"
+    ERROR_MESSAGE_CONTAINER = ".error-message-container.error"
+    BACKGROUND_COLOR_CSS = "background-color"
 
     def __init__(self, page):
         super().__init__(page)
@@ -38,3 +41,14 @@ class SauceDemoLoginPage(SauceDemoBasePage):
     def get_error(self) -> str:
         self.wait_for(self.ERROR_MSG)
         return self.get_text(self.ERROR_MSG)
+
+    def expect_login_button_green(self, color_scheme: str):
+        expect(self.page.locator(self.LOGIN_BTN)).to_have_css(
+            self.BACKGROUND_COLOR_CSS, color_scheme,
+        )
+
+    def expect_error_banner_red(self, color_scheme: str):
+        self.wait_for(self.ERROR_MESSAGE_CONTAINER)
+        expect(self.page.locator(self.ERROR_MESSAGE_CONTAINER)).to_have_css(
+            self.BACKGROUND_COLOR_CSS, color_scheme,
+        )

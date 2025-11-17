@@ -17,6 +17,12 @@ def pytest_runtest_call(item):
         pytest.logger.info(f"Running Test: ${item.name}\n${doc.strip()}")
 
 
+def pytest_collection_modifyitems(config, items):
+    for item in items:
+        if 'smoke' in item.keywords:
+            item.add_marker(pytest.mark.order(1))
+
+
 # --------------------------------
 # Pytest CLI options
 # --------------------------------
