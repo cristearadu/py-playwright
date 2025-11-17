@@ -82,6 +82,7 @@ jobs:
       - name: Run tests in Docker (${{ matrix.browser }})
         run: |
           docker run --rm \
+            -v ${{ github.workspace }}/allure-results:/allure-results \
             -e BASE_URL="${BASE_URL}" \
             -e RUN_BROWSER="${{ matrix.browser }}" \
             -e PYTEST_MARKERS="regression" \
@@ -99,6 +100,7 @@ jobs:
             ./pytest.log
             logs/
             reports/
+            allure-results/
           if-no-files-found: ignore
 
   # Manual job: lets you choose browser/markers/headless/workers/tests_path at dispatch time
@@ -141,6 +143,7 @@ jobs:
         shell: bash
         run: |
           docker run --rm \
+            -v ${{ github.workspace }}/allure-results:/allure-results \
             -e BASE_URL="${BASE_URL}" \
             -e RUN_BROWSER="${{ github.event.inputs.browser }}" \
             -e PYTEST_MARKERS="${{ github.event.inputs.markers }}" \
@@ -158,4 +161,36 @@ jobs:
             ./pytest.log
             logs/
             reports/
+            allure-results/
           if-no-files-found: ignore
+
+  allure-report:
+    needs: [tests]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download Allure results
+        uses: actions/download-artifact@v4
+        with:
+          path: allure-results
+          pattern: allure-results-*
+
+      - name: Generate Allure Report
+        uses: simple-elf/allure-report-action@v1
+        with:
+          allure_results: allure-results
+          allure_report: allure-report
+
+      - name: Upload report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report
+          path: allure-report
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: allure-report
