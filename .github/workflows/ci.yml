@@ -98,6 +98,7 @@ jobs:
           path: |
             ./pytest.log
             logs/
+            reports/
           if-no-files-found: ignore
 
   # Manual job: lets you choose browser/markers/headless/workers/tests_path at dispatch time
@@ -156,4 +157,5 @@ jobs:
           path: |
             ./pytest.log
             logs/
+            reports/
           if-no-files-found: ignore
