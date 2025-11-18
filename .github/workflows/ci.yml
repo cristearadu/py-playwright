@@ -90,7 +90,6 @@ jobs:
             -e PYTEST_HEADLESS="1" \
             -e PYTEST_TESTS="tests" \
             py-playwright:${{ github.sha }}
-            pytest --alluredir=/allure-results
 
       - name: Upload logs (if any)
         if: always()
@@ -160,7 +159,6 @@ jobs:
             -e PYTEST_TESTS="${{ github.event.inputs.tests_path }}" \
             -e PYTEST_WORKERS="${{ github.event.inputs.workers }}" \
             py-playwright:${{ github.sha }}
-            pytest --alluredir=/allure-results
 
       - name: Upload logs (if any)
         if: always()
