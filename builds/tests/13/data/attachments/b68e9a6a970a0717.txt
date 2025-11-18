@@ -1,0 +1,1 @@
+2025-11-18 11:24:08,947 [INFO] [gw1] Trying to login in with Username: 'standard_user', Password: 'MlUO+&Tx+6'

@@ -1,0 +1,3 @@
+2025-11-18 11:26:28,184 [DEBUG] [gw0] Using selector: EpollSelector
+2025-11-18 11:26:28,629 [DEBUG] [gw0] Browser has been selected: firefox
+2025-11-18 11:26:32,812 [INFO] [gw0] Verifying element $.login_logo is visible

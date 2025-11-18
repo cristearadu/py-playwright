@@ -1,0 +1,1 @@
+2025-11-18 11:27:13,695 [INFO] [gw3] Trying to login in with Username: 'locked_out_user', Password: 'secret_sauce'

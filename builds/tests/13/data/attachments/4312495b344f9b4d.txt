@@ -1,0 +1,3 @@
+DEBUG    asyncio:selector_events.py:54 Using selector: EpollSelector
+DEBUG    pytest-logger:conftest.py:53 Browser has been selected: firefox
+INFO     pytest-logger:base_page.py:50 Verifying element $.login_logo is visible
