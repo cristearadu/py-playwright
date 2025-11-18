@@ -3,7 +3,9 @@ FROM mcr.microsoft.com/playwright/python:latest
 ENV PYTHONUNBUFFERED=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1 \
     PLAYWRIGHT_BROWSERS_PATH=/ms-playwright \
-    BASE_URL=https://www.saucedemo.com/
+    SAUCEDEMO_BASE_URL=https://www.saucedemo.com/ \
+    PRACTICE_BASE_URL=https://rahulshettyacademy.com/AutomationPractice/ \
+    HEROKU_BASE_URL=https://the-internet.herokuapp.com/
 
 WORKDIR /app
 

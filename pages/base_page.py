@@ -221,15 +221,15 @@ class BasePage:
     # --------------------------
 
     def is_visible(self, target: LocatorLike) -> bool:
-        pytest.logger.info(f"Verifying element ${target} is visible")
+        pytest.logger.info(f"Verifying element {target} is visible")
         return self._loc(target).is_visible()
 
     def is_enabled(self, target: LocatorLike) -> bool:
-        pytest.logger.info(f"Verifying element ${target} is enabled")
+        pytest.logger.info(f"Verifying element {target} is enabled")
         return self._loc(target).is_enabled()
 
     def is_disabled(self, target: LocatorLike) -> bool:
-        pytest.logger.info(f"Verifying element ${target} is disabled")
+        pytest.logger.info(f"Verifying element {target} is disabled")
         return not self._loc(target).is_enabled()
 
     def attribute_equals(self, target: LocatorLike, attribute: str, expected: str) -> bool:
@@ -241,6 +241,7 @@ class BasePage:
         return expected in actual
 
     def exists(self, target: LocatorLike) -> bool:
+        pytest.logger.info(f"Checking if locator ${target} exists")
         return self.count(target) > 0
 
     def count(self, target: LocatorLike) -> int:

@@ -15,7 +15,8 @@ class Settings:
 
     # Application base URL
     saucedemo_base_url: str = os.getenv("SAUCEDEMO_BASE_URL", "https://www.saucedemo.com/")
-    practice_base_url = os.getenv("PRACTICE_BASE_URL", "https://rahulshettyacademy.com/AutomationPractice/")
+    practice_base_url: str = os.getenv("PRACTICE_BASE_URL", "https://rahulshettyacademy.com/AutomationPractice/")
+    heroku_base_url: str = os.getenv("HEROKU_BASE_URL", "https://the-internet.herokuapp.com/")
 
     # Environment / locale
     timezone: str = os.getenv("DEFAULT_TIMEZONE", Timezone.UTC.value)

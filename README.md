@@ -7,13 +7,14 @@ End-to-end UI test framework built with **Playwright** + **pytest**, packaged fo
 ## ✨ Features
 
 - **Playwright + pytest** with Page Object Model (POM)
-- **Parallel execution** via `pytest-xdist`
+- **Parallel execution** via `pytest-xdist` (`-n auto`)
 - **Typed helpers** & a shared **BasePage**
 - **Testing Managers** (e.g., `SauceDemoTestingManager`) with a `UserCredentials` dataclass
 - **Deterministic selectors & readiness helpers**
 - **Color scheme checks** using CSS assertions
 - **First-class Docker support** (no host deps needed)
-- **GitHub Actions** matrix (Chrome / Firefox / Safari*), scheduled + manual dispatch
+- **GitHub Actions** matrix (Chrome / Firefox / Safari\*), scheduled + manual dispatch
+- **Multi‑app ready**: Sauce Demo, Rahul Shetty **Practice**, and The Internet (**Herokuapp**) — *currently implemented: Drag &amp; Drop, Dynamic Controls*
 
 \* Safari uses Playwright **WebKit** (headless in containers).
 
@@ -25,10 +26,20 @@ End-to-end UI test framework built with **Playwright** + **pytest**, packaged fo
 py-playwright/
 ├─ constants/
 │  ├─ browser_types.py
-│  ├─ saucedemo_constants.py
-│  └─ ...
+│  ├─ timeouts.py
+│  └─ saucedemo_constants.py
 ├─ pages/
+│  ├─ base_page.py
+│  ├─ heroku_app_pages/
+│  │  ├─ __init__.py
+│  │  ├─ heroku_home_page.py
+│  │  ├─ heroku_app_drag_and_drop_page.py
+│  │  └─ heroku_app_dynamic_controlls_page.py
+│  ├─ practice_pages/
+│  │  └─ practice_home_page.py
 │  └─ saucedemo_pages/
+│     ├─ saucedemo_base_page.py
+│     ├─ saucedemo_inventory_page.py
 │     └─ saucedemo_login_page.py
 ├─ project_utils/
 │  ├─ browser_factory.py
@@ -38,15 +49,30 @@ py-playwright/
 │  ├─ base_testing_manager.py
 │  └─ saucedemo_testing_manager.py
 ├─ tests/
-│  └─ tests_saucedemo/
-│     └─ test_login.py
+│  ├─ tests_saucedemo/
+│  │  ├─ conftest.py
+│  │  ├─ test_login.py
+│  │  └─ test_cases/
+│  │     └─ login_cases.py
+│  ├─ tests_practice_home/
+│  │  ├─ conftest.py
+│  │  ├─ test_practice.py
+│  │  └─ test_cases/
+│  │     └─ practice_cases.py
+│  └─ tests_heroku_app/
+│     ├─ conftest.py
+│     ├─ test_drag_and_drop.py
+│     ├─ test_dynamic_controls.py
+│     └─ test_cases/
+│        └─ heroku_cases.py
+├─ .env
 ├─ logs/
 ├─ pyproject.toml
 ├─ dockerfile
 └─ .github/workflows/ci.yml
 ```
 
-The framework is **multi‑app ready**. Each app gets its own `pages/<app>_pages/` and `tests/tests_<app>/` folders. For base URLs, each app owns an env variable (e.g., current app uses `SAUCEDEMO_BASE_URL`).
+Each app has its own `pages/<app>_pages/` and `tests/tests_<app>/` folders. Base URLs are configured per app via env vars (see below).
 
 ---
 
@@ -69,8 +95,10 @@ python -m playwright install
 Run tests:
 
 ```bash
-# Base URL used by the Sauce Demo suite
+# Base URLs used by the suites
 export SAUCEDEMO_BASE_URL="https://www.saucedemo.com/"
+export PRACTICE_BASE_URL="https://rahulshettyacademy.com/AutomationPractice/"
+export HEROKU_BASE_URL="https://the-internet.herokuapp.com/"
 
 # Pick a browser: chrome | firefox | safari  (safari = webkit)
 export RUN_BROWSER=chrome
@@ -84,6 +112,7 @@ pytest -m "regression" -n auto
 ```
 
 > The suite relies on env vars (see **Runtime configuration** below).
+
 #### Parallel runs (`pytest -n auto`)
 
 Common commands:
@@ -104,7 +133,6 @@ pytest tests/tests_saucedemo/test_login.py -n auto
 RUN_BROWSER=firefox pytest -n auto
 ```
 
-
 ---
 
 ### 2) Docker (recommended & reproducible)
@@ -120,6 +148,8 @@ Run:
 ```bash
 docker run --rm \
   -e SAUCEDEMO_BASE_URL="https://www.saucedemo.com/" \
+  -e PRACTICE_BASE_URL="https://rahulshettyacademy.com/AutomationPractice/" \
+  -e HEROKU_BASE_URL="https://the-internet.herokuapp.com/" \
   -e RUN_BROWSER="chrome" \
   -e PYTEST_MARKERS="regression" \
   -e PYTEST_WORKERS="auto" \
@@ -134,10 +164,18 @@ Examples:
 
 ```bash
 # Firefox
-docker run --rm -e RUN_BROWSER=firefox -e PYTEST_MARKERS="login" -e PYTEST_HEADLESS=1 py-playwright:local
+docker run --rm \
+  -e RUN_BROWSER=firefox \
+  -e PYTEST_MARKERS="login" \
+  -e PYTEST_HEADLESS=1 \
+  py-playwright:local
 
 # Safari (WebKit; forced headless in container)
-docker run --rm -e RUN_BROWSER=safari  -e PYTEST_MARKERS="login" -e PYTEST_HEADLESS=1 py-playwright:local
+docker run --rm \
+  -e RUN_BROWSER=safari \
+  -e PYTEST_MARKERS="login" \
+  -e PYTEST_HEADLESS=1 \
+  py-playwright:local
 ```
 
 Artifacts:
@@ -148,14 +186,16 @@ Artifacts:
 
 ## ⚙️ Runtime configuration (env vars)
 
-| Variable              | Description                                                            | Example                          |
-|-----------------------|------------------------------------------------------------------------|----------------------------------|
-| `SAUCEDEMO_BASE_URL`  | Base URL for the Sauce Demo app under test                             | `https://www.saucedemo.com/`     |
-| `RUN_BROWSER`         | `chrome` \| `firefox` \| `safari` (`safari` = WebKit)                  | `chrome`                         |
-| `PYTEST_MARKERS`      | Pytest `-m` expression to filter tests                                 | `smoke or regression`            |
-| `PYTEST_WORKERS`      | Parallel workers for `xdist` (`auto` or an integer)                    | `auto`                           |
-| `PYTEST_HEADLESS`     | `1` to run headless, `0` for headed                                    | `1`                              |
-| `PYTEST_TESTS`        | Test path/pattern                                                      | `tests`                          |
+| Variable              | Description                                                            | Example                                      |
+|-----------------------|------------------------------------------------------------------------|----------------------------------------------|
+| `SAUCEDEMO_BASE_URL`  | Base URL for the Sauce Demo app under test                             | `https://www.saucedemo.com/`                 |
+| `PRACTICE_BASE_URL`   | Base URL for Rahul Shetty Practice site                                | `https://rahulshettyacademy.com/AutomationPractice/` |
+| `HEROKU_BASE_URL`     | Base URL for The Internet (Herokuapp)                                  | `https://the-internet.herokuapp.com/`        |
+| `RUN_BROWSER`         | `chrome` \| `firefox` \| `safari` (`safari` = WebKit)                  | `chrome`                                     |
+| `PYTEST_MARKERS`      | Pytest `-m` expression to filter tests                                 | `smoke or regression`                        |
+| `PYTEST_WORKERS`      | Parallel workers for `xdist` (`auto` or an integer)                    | `auto`                                       |
+| `PYTEST_HEADLESS`     | `1` to run headless, `0` for headed                                    | `1`                                          |
+| `PYTEST_TESTS`        | Test path/pattern                                                      | `tests`                                      |
 
 The Docker entrypoint maps these to pytest flags and to the internal `BrowserFactory`.
 
@@ -163,10 +203,10 @@ The Docker entrypoint maps these to pytest flags and to the internal `BrowserFac
 
 ## 🏗 Architecture
 
-The code is organized into clear layers to keep tests **readable**, **maintainable**, and **extensible** across multiple apps/pages.
+Organized into clear layers to keep tests **readable**, **maintainable**, and **extensible** across multiple apps.
 
 ### 1) Constants
-- `constants/` holds enumerations and values specific to apps (e.g., selectors, color schemes).
+- `constants/` holds enums and app-specific values (selectors, color schemes).
 - Example: `saucedemo_constants.py` defines stable selectors and expected UI CSS (RGB values for color assertions).
 
 ### 2) Testing Managers
@@ -177,16 +217,20 @@ The code is organized into clear layers to keep tests **readable**, **maintainab
   - A small **compose** API for dynamic users (`compose_user(username=..., password=...)`)
 
 ### 3) Pages (POM)
-- `project_utils/base_page.py` (BasePage) provides small, **synchronous** wrappers for Playwright actions and asserts:
-  - navigation, typing, clicking
+- `pages/base_page.py` (BasePage) provides small, **synchronous** wrappers for Playwright actions and asserts:
+  - navigation, typing, clicking, waiting
   - `is_visible / is_enabled / exists / attribute_equals / wait_for_disappear`
-  - helpers like `check_element_is_present_and_enabled`
+  - built-in helpers: `check_element_is_present_and_enabled`, `wait_until_editable`
+  - ergonomic locator helpers: `by_role(...)`, `by_label(...)`, `by_placeholder(...)`, `by_test_id(...)`, `first(...)`, `nth(...)`, `filter_has_text(...)`
+  - scroll helpers that work across browsers (fallbacks for Firefox when needed)
 - App‑specific pages live under `pages/<app>_pages/`.
-  - `SauceDemoLoginPage` centralizes locators, actions (e.g., `login` / `login_with_user`) and **expectations** (e.g., header visible, login button green, error banner red).
+  - **SauceDemo**: `saucedemo_login_page.py`, `saucedemo_inventory_page.py` (base page in `saucedemo_base_page.py`)
+  - **Practice Home**: `practice_home_page.py`
+  - **Herokuapp**: `heroku_home_page.py`, `heroku_app_drag_and_drop_page.py`, `heroku_app_dynamic_controlls_page.py`
 
 ### 4) Tests
 - Tests live under `tests/tests_<app>/` and **only** talk to Page Objects and managers.
-- Heavily use `@pytest.mark.parametrize` for coverage and **DRY** cases (e.g., login permutations, color schemes).
+- Heavy `@pytest.mark.parametrize` usage for coverage and **DRY** scenarios (login permutations, color schemes, etc.).
 - Assertions prefer **page‑level** methods over raw locators to keep tests expressive and resilient.
 
 ### 5) Utilities & Settings
@@ -194,11 +238,11 @@ The code is organized into clear layers to keep tests **readable**, **maintainab
   - `chrome` → Chromium channel `"chrome"`
   - `firefox` → `playwright.firefox`
   - `safari` → `playwright.webkit` (forced headless in containers)
-- `settings.py` reads environment (e.g., `SAUCEDEMO_BASE_URL`); `conftest.py` wires fixtures:
-  - CLI/env reading
+- `settings.py` reads environment (`SAUCEDEMO_BASE_URL`, `PRACTICE_BASE_URL`, `HEROKU_BASE_URL`); `conftest.py` wires fixtures:
   - `playwright_instance` / `browser` / `context` / `page`
-  - `base_url` fixture per app (currently Sauce Demo)
-- `logger.py` configures unified console + file logging, worker‑aware when running with xdist.
+  - per‑app base URL fixtures (e.g., `saucedemo_base_url`, `practice_base_url`, `heroku_base_url`)
+  - ready‑to‑use page fixtures (e.g., `saucedemo_page`, `practice_home_page`, `heroku_home_page`)
+- `logger.py` configures unified console + file logging, worker‑aware for xdist.
 
 ### 6) Parallelization
 - `pytest-xdist` with `-n auto` for speed.
@@ -210,11 +254,22 @@ The code is organized into clear layers to keep tests **readable**, **maintainab
 
 - **Sauce Demo – Login page**
   - Presence & readiness of **username**, **password**, **Login** button, and header (“Swag Labs”)
-  - **Happy flow** login with a standard user (navigates away from login page)
+  - **Happy flow** with a standard user (navigates away from login page)
   - **Negative** scenarios: locked out user, invalid username/password, username/password required
   - **Color scheme** checks via CSS:
     - Login button background: `#3ddc91` → `rgb(61, 220, 145)`
     - Error banner background: `#e2231a` → `rgb(226, 35, 26)`
+
+- **Practice site – Examples**
+  - Hide/Show text field scenario
+  - Alert/Confirm dialog handling
+  - Mouse hover menu
+  - iFrame actions
+  - Web tables parsing & assertions
+
+- **Herokuapp – Implemented now**
+  - Drag &amp; Drop
+  - Dynamic Controls
 
 ---
 
@@ -264,3 +319,6 @@ Artifacts uploaded:
 
 - **Safari/WebKit: “cannot open display”**  
   You’re launching headed WebKit in a container. The `BrowserFactory` forces headless when `DISPLAY` is absent. Ensure `PYTEST_HEADLESS=1`.
+
+- **Firefox didn’t scroll to element**  
+  Use the BasePage’s scroll helpers (they add small fallbacks), or ensure the element is scrolled with `element.scroll_into_view_if_needed()` before interacting.

@@ -1,0 +1,3 @@
+from .heroku_home_page import HerokuHomePage
+from .heroku_app_drag_and_drop_page import HerokuDragAndDropPage
+from .heroku_app_dynamic_controlls_page import HerokuDynamicControlsPage
