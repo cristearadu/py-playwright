@@ -1,0 +1,1 @@
+INFO     pytest-logger:saucedemo_login_page.py:38 Trying to login in with Username: '', Password: ')O61MsXuo*'

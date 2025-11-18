@@ -1,0 +1,1 @@
+2025-11-18 14:17:38,861 [INFO] [gw1] Trying to login in with Username: 'standard_user', Password: '^3TjCnqIH7'

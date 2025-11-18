@@ -1,0 +1,3 @@
+2025-11-18 14:18:12,926 [DEBUG] [gw2] Using selector: EpollSelector
+2025-11-18 14:18:13,386 [DEBUG] [gw2] Browser has been selected: chrome
+2025-11-18 14:18:14,114 [INFO] [gw2] Trying to login in with Username: 'vhodges', Password: '!$l79V@n(b'

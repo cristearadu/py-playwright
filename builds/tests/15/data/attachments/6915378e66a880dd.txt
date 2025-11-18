@@ -1,0 +1,3 @@
+DEBUG    asyncio:selector_events.py:54 Using selector: EpollSelector
+DEBUG    pytest-logger:conftest.py:53 Browser has been selected: firefox
+INFO     pytest-logger:saucedemo_login_page.py:38 Trying to login in with Username: 'paullee', Password: 'c4ZJ!YO4(c'

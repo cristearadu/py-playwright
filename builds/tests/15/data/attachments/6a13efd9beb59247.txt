@@ -1,0 +1,1 @@
+2025-11-18 14:17:35,203 [INFO] [gw0] Trying to login in with Username: 'standard_user', Password: '$7)DnAuNlk'
