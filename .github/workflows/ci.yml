@@ -43,6 +43,7 @@ permissions:
   contents: write
   pages: write
   id-token: write
+  checks: write
 
 jobs:
   # Regular CI: build image and run in Docker for each browser
