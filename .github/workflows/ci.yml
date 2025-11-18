@@ -178,10 +178,10 @@ jobs:
           pattern: allure-results-*
 
       - name: Generate Allure Report
-        uses: simple-elf/allure-report-action@v1.9
+        uses: simple-elf/allure-generator@v1
         with:
-          allure_results: allure-results
-          allure_report: allure-report
+          results: allure-results
+          report: allure-report
 
       - name: Upload report artifact
         uses: actions/upload-artifact@v4
