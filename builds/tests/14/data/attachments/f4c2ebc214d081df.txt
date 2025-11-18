@@ -1,0 +1,1 @@
+2025-11-18 14:05:14,405 [INFO] [gw2] Trying to login in with Username: '', Password: 'EJ!DT3pe_2'

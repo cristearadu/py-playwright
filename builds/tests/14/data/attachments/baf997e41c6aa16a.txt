@@ -1,0 +1,1 @@
+2025-11-18 14:05:15,564 [INFO] [gw0] Trying to login in with Username: 'standard_user', Password: '^Xd9M*4hKH'

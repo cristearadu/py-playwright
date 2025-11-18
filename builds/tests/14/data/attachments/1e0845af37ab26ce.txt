@@ -1,0 +1,3 @@
+2025-11-18 14:05:20,354 [DEBUG] [gw1] Using selector: EpollSelector
+2025-11-18 14:05:20,815 [DEBUG] [gw1] Browser has been selected: safari
+2025-11-18 14:05:22,637 [INFO] [gw1] Trying to login in with Username: 'locked_out_user', Password: 'secret_sauce'

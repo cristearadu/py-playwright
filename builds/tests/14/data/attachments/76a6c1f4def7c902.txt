@@ -1,0 +1,3 @@
+2025-11-18 14:05:41,401 [DEBUG] [gw2] Using selector: EpollSelector
+2025-11-18 14:05:41,805 [DEBUG] [gw2] Browser has been selected: firefox
+2025-11-18 14:05:45,444 [INFO] [gw2] Trying to login in with Username: 'locked_out_user', Password: 'secret_sauce'

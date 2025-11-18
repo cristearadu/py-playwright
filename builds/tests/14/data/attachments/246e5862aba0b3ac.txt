@@ -1,0 +1,3 @@
+DEBUG    asyncio:selector_events.py:54 Using selector: EpollSelector
+DEBUG    pytest-logger:conftest.py:53 Browser has been selected: chrome
+INFO     pytest-logger:saucedemo_login_page.py:38 Trying to login in with Username: 'gmorgan', Password: ''
