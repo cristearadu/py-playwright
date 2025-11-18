@@ -39,6 +39,11 @@ on:
         required: false
         default: "auto"
 
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
 jobs:
   # Regular CI: build image and run in Docker for each browser
   tests:
