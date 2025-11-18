@@ -88,14 +88,12 @@ jobs:
         run: |
           docker run --rm \
             -v ${{ github.workspace }}/allure-results:/allure-results \
-            -v ${{ github.workspace }}/junit-results:/junit-results \
             -e BASE_URL="${BASE_URL}" \
             -e RUN_BROWSER="${{ matrix.browser }}" \
             -e PYTEST_MARKERS="regression" \
             -e PYTEST_WORKERS="auto" \
             -e PYTEST_HEADLESS="1" \
             -e PYTEST_TESTS="tests" \
-            -e PYTEST_JUNIT="1" \
             py-playwright:${{ github.sha }}
 
       - name: Upload logs (if any)
@@ -118,13 +116,13 @@ jobs:
           path: allure-results/
           if-no-files-found: ignore
 
-      - name: Upload JUnit results
+      - name: Test Report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: dorny/test-reporter@v1
         with:
-          name: junit-${{ matrix.browser }}
-          path: junit-results/
-          if-no-files-found: ignore
+          name: Playwright Tests (${{ matrix.browser }})
+          path: "junit-results/**/*.xml"
+          reporter: junit
 
   # Manual job: lets you choose browser/markers/headless/workers/tests_path at dispatch time
   tests-manual:
@@ -167,14 +165,12 @@ jobs:
         run: |
           docker run --rm \
             -v ${{ github.workspace }}/allure-results:/allure-results \
-            -v ${{ github.workspace }}/junit-results:/junit-results \
             -e BASE_URL="${BASE_URL}" \
             -e RUN_BROWSER="${{ github.event.inputs.browser }}" \
             -e PYTEST_MARKERS="${{ github.event.inputs.markers }}" \
             -e PYTEST_HEADLESS="${{ github.event.inputs.headless }}" \
             -e PYTEST_TESTS="${{ github.event.inputs.tests_path }}" \
             -e PYTEST_WORKERS="${{ github.event.inputs.workers }}" \
-            -e PYTEST_JUNIT="1" \
             py-playwright:${{ github.sha }}
 
       - name: Upload logs (if any)
@@ -189,60 +185,10 @@ jobs:
             allure-results/
           if-no-files-found: ignore
 
-      - name: Upload JUnit results
+      - name: Test Report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: dorny/test-reporter@v1
         with:
-          name: junit-manual
-          path: junit-results/
-          if-no-files-found: ignore
-
-  allure-report:
-    needs: [tests]
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Download Allure results
-        uses: actions/download-artifact@v4
-        with:
-          path: allure-results
-          pattern: allure-results-*
-
-      - name: Merge Allure results
-        run: |
-          mkdir -p merged-allure-results
-          find allure-results -maxdepth 2 -type f -exec cp {} merged-allure-results \;
-
-      - name: Checkout GitHub Pages with previous Allure reports
-        uses: actions/checkout@v4
-        continue-on-error: true
-        with:
-          ref: gh-pages
-          path: gh-pages-dir
-
-      - name: Generate Allure test report
-        uses: andgineer/allure-report@v3.6
-        id: allure-report
-        if: always()
-        with:
-          allure-results: merged-allure-results
-          website: gh-pages-dir
-          reports-site-path: builds/tests
-
-      - name: Upload report artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: allure-report
-          path: ${{ steps.allure-report.outputs.reports-site }}
-
-      - name: Publish Allure test report
-        uses: peaceiris/actions-gh-pages@v3
-        if: ${{ always() && (steps.allure-report.outcome == 'success') }}
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages
-          publish_dir: ${{ steps.allure-report.outputs.reports-site }}
-          destination_dir: ${{ steps.allure-report.outputs.reports-site-path }}
+          name: Playwright Tests (manual)
+          path: "junit-results/**/*.xml"
+          reporter: junit
