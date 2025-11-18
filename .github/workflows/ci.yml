@@ -88,12 +88,14 @@ jobs:
         run: |
           docker run --rm \
             -v ${{ github.workspace }}/allure-results:/allure-results \
+            -v ${{ github.workspace }}/junit-results:/junit-results \
             -e BASE_URL="${BASE_URL}" \
             -e RUN_BROWSER="${{ matrix.browser }}" \
             -e PYTEST_MARKERS="regression" \
             -e PYTEST_WORKERS="auto" \
             -e PYTEST_HEADLESS="1" \
             -e PYTEST_TESTS="tests" \
+            -e PYTEST_JUNIT="1" \
             py-playwright:${{ github.sha }}
 
       - name: Upload logs (if any)
@@ -114,6 +116,14 @@ jobs:
         with:
           name: allure-results-${{ matrix.browser }}
           path: allure-results/
+          if-no-files-found: ignore
+
+      - name: Upload JUnit results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-${{ matrix.browser }}
+          path: junit-results/
           if-no-files-found: ignore
 
   # Manual job: lets you choose browser/markers/headless/workers/tests_path at dispatch time
@@ -157,12 +167,14 @@ jobs:
         run: |
           docker run --rm \
             -v ${{ github.workspace }}/allure-results:/allure-results \
+            -v ${{ github.workspace }}/junit-results:/junit-results \
             -e BASE_URL="${BASE_URL}" \
             -e RUN_BROWSER="${{ github.event.inputs.browser }}" \
             -e PYTEST_MARKERS="${{ github.event.inputs.markers }}" \
             -e PYTEST_HEADLESS="${{ github.event.inputs.headless }}" \
             -e PYTEST_TESTS="${{ github.event.inputs.tests_path }}" \
             -e PYTEST_WORKERS="${{ github.event.inputs.workers }}" \
+            -e PYTEST_JUNIT="1" \
             py-playwright:${{ github.sha }}
 
       - name: Upload logs (if any)
@@ -175,6 +187,14 @@ jobs:
             logs/
             reports/
             allure-results/
+          if-no-files-found: ignore
+
+      - name: Upload JUnit results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-manual
+          path: junit-results/
           if-no-files-found: ignore
 
   allure-report:
