@@ -9,7 +9,7 @@ WORKDIR /app
 
 COPY pyproject.toml ./
 RUN python -m pip install --upgrade pip setuptools wheel \
- && pip install --no-cache-dir -e .
+ && pip install --no-cache-dir -e . allure-pytest
 
 COPY . .
 
@@ -33,7 +33,7 @@ RUN printf '%s\n' '#!/usr/bin/env bash' \
     'if [[ -n "${PYTEST_MARKERS:-}" ]]; then' \
     '  MARKER_ARGS=(-m "${PYTEST_MARKERS}")' \
     'fi' \
-    'exec pytest "${PYTEST_TESTS:-tests}" -n "${PYTEST_WORKERS:-auto}" --run-browser="${RUN_BROWSER:-chrome}" ${HEADLESS_FLAG} "${MARKER_ARGS[@]}" ${PYTEST_EXTRA_ARGS:-}' \
+    'exec pytest "${PYTEST_TESTS:-tests}" -n "${PYTEST_WORKERS:-auto}" --run-browser="${RUN_BROWSER:-chrome}" ${HEADLESS_FLAG} "${MARKER_ARGS[@]}" --alluredir=/allure-results ${PYTEST_EXTRA_ARGS:-}' \
     > /usr/local/bin/pytest-entrypoint && chmod +x /usr/local/bin/pytest-entrypoint
 
 ENTRYPOINT ["/usr/local/bin/pytest-entrypoint"]
