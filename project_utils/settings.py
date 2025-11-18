@@ -15,6 +15,7 @@ class Settings:
 
     # Application base URL
     saucedemo_base_url: str = os.getenv("SAUCEDEMO_BASE_URL", "https://www.saucedemo.com/")
+    practice_base_url = os.getenv("PRACTICE_BASE_URL", "https://rahulshettyacademy.com/AutomationPractice/")
 
     # Environment / locale
     timezone: str = os.getenv("DEFAULT_TIMEZONE", Timezone.UTC.value)

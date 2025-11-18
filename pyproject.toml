@@ -50,7 +50,8 @@ markers = [
     "smoke: Mark test as a quick smoke test.",
     "regression: Mark test as regression test (all tests).",
     "login: Mark the test as login functionality.",
-    "color_scheme: Mark the test as color scheme validation."
+    "color_scheme: Mark the test as color scheme validation.",
+    "practice_tests: Mark thet test as test from practice home"
 ]
 
 

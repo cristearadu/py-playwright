@@ -1,1 +1,2 @@
 from .saucedemo_pages.saucedemo_login_page import SauceDemoLoginPage
+from .practice_pages.practice_home_page import PracticeHomePage
